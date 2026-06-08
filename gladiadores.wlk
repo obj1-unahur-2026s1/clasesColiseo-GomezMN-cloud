@@ -1,10 +1,10 @@
 import equipamiento.*
-
+import gruposDeGladiadores.*
 class Gladiador {
     const property nombre
     var unidadDeVida = 100
     var armaActual
-    const fuerza
+    const property fuerza = 10
     var contrincanteActual = null
 
     method atacar(unGladiador)
@@ -12,26 +12,31 @@ class Gladiador {
     method armaEquipada()
     method defensaEquipada()
     method poderDeAtaque()
+
+    method crearGrupo(unGladiador)
+
     method recibirAtaque(daño) {
         unidadDeVida = (unidadDeVida - daño).max(0)
     }
     method contrincante(unGladiador) {
         contrincanteActual = unGladiador
     }
-    method pelea(unGladiador, otroGladiador) {
-        unGladiador.atacar(otroGladiador)
+    method pelea(otroGladiador) {
+        self.atacar(otroGladiador)
         otroGladiador.defenderse()
     }
+    method cambiarArma(nuevaArma) {
+        armaActual = nuevaArma
+    }
+    method vida() = unidadDeVida
 }
 
 class Mirmillones inherits Gladiador {
     var armaduraActual = cascoConCresta
+    var property grupoActual = sinGrupo
 
     method cambiarArmadura(nuevaArmadura) {
         armaduraActual = nuevaArmadura
-    }
-    method cambiarArma(nuevaArma) {
-        armaActual = nuevaArma
     }
     
     override method atacar(unGladiador) {
@@ -44,11 +49,17 @@ class Mirmillones inherits Gladiador {
     override method armaEquipada() = armaActual
     override method defensaEquipada() = armaduraActual.defensa() + self.destreza()
     method destreza() = 15
-    override method poderDeAtaque() = fuerza + armaActual.valorDeAtaque()
+    override method poderDeAtaque() = self.fuerza() + armaActual.valorDeAtaque()
 
+    override method crearGrupo(unGladiador) {
+        grupoActual = new GrupoDeGladiadores(nombre = "mirmillolandia")
+        grupoActual.reclutarGladiador(unGladiador)
+        unGladiador.grupoActual(grupoActual)
+    }
 }
 class Dimachaerus inherits Gladiador {
     var destreza
+    var property grupoActual = sinGrupo
 
     override method atacar(unGladiador) {
         unGladiador.contrincante(self)
@@ -62,15 +73,18 @@ class Dimachaerus inherits Gladiador {
         destreza += 1
     }
 
-    method fuerza() = 10
     override method armaEquipada() = armaActual
     override method defensaEquipada() = destreza / 2
     override method poderDeAtaque() = self.fuerza() + armaActual.sum({a => a.valorDeAtaque()})
+
+    override method crearGrupo(unGladiador) {
+        grupoActual = new GrupoDeGladiadores(nombre = "d" + (self.poderDeAtaque() + unGladiador.poderDeAtaque()).toString())
+        grupoActual.reclutarGladiador(unGladiador)
+        unGladiador.grupoActual(grupoActual)
+    }
 }
 
 
 
 
-object desarmado {
-    method unidadDeDefensa() = 0
-}
+object sinGrupo {}

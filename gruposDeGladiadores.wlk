@@ -4,7 +4,7 @@ class GrupoDeGladiadores {
     const property nombre
     var property cantidadDePeleasRealizadas = 0
     const property gladiadoresActuales = []
-    
+
     method reclutarGladiador(unGladiador) {
         if (not gladiadoresActuales.contains(unGladiador)) {
             gladiadoresActuales.add(unGladiador)
@@ -15,7 +15,11 @@ class GrupoDeGladiadores {
             gladiadoresActuales.remove(unGladiador)
         }
     }
+    method campeonActualMasFuerte() = gladiadoresActuales.filter({p => p.vida() > 0}).max({g => g.poderDeAtaque()})
+    
 }
-
-const a = new GrupoDeGladiadores(nombre = "bala")
-const roca = new Mirmillones(nombre = roca, armaActual = espada, fuerza = 10)
+class Combate {
+    method round(unGrupo, otroGrupo) {
+        unGrupo.campeonActualMasFuerte().pelea(otroGrupo.campeonActualMasFuerte())
+    }
+}
